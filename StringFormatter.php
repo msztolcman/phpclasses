@@ -19,7 +19,7 @@
  *
  *  * simple replacement with strict sequence:
  *      $f = new StringFormatter ('{1} {0}!');
- *      echo $f->parse ('world', Hello'); # Hello world!
+ *      echo $f->parse ('world', 'Hello'); # Hello world!
  *
  *  * text alignment:
  *      * left:
@@ -73,7 +73,7 @@ class StringFormatter {
      *
      * @var array
      */
-    private $matrix__base_convert = array (
+    protected static $matrix__base_convert = array (
         'b' =>  2,
         'o' =>  8,
         'd' => 10,
@@ -86,7 +86,7 @@ class StringFormatter {
      *
      * @var array
      */
-    private $matrix__str_pad = array (
+    protected static $matrix__str_pad = array (
         '<' => STR_PAD_LEFT,
         '>' => STR_PAD_RIGHT,
         '^' => STR_PAD_BOTH,
@@ -96,28 +96,28 @@ class StringFormatter {
      *
      * @var string
      */
-    private $format = null;
+    protected $format = null;
 
     /**
      * Given for StringFormatter::parse parameters
      *
      * @var array
      */
-    private $params = array ();
+    protected $params = array ();
 
     /**
      * Pointer for accessing given elements when no placeholder in format is given
      *
      * @var int
      */
-    private $pointer = 0;
+    protected $pointer = 0;
 
     /**
      * Regular expression for finding tokens in format
      *
      * @var string
      */
-    private $rxp_token = '
+    protected $rxp_token = '
         /
         \{              # opening brace
             (
@@ -141,7 +141,7 @@ class StringFormatter {
      * @param int parameter index (optional)
      * @return mixed
      */
-    private function get_param ($key = '') {
+    protected function get_param ($key = '') {
         if ($key == '') {
             $key = $this->pointer++;
         }
@@ -156,12 +156,12 @@ class StringFormatter {
      * @param string matched token data
      * @return string
      */
-    private function format_callback ($data) {
+    protected function format_callback ($data) {
         if (count ($data) < 2) {
             return $data[0];
         }
 
-        ## simple auto or exact placeholder
+        ## simple auto or explicit placeholder
         if ($data[1] == '' || is_numeric ($data[1])) {
             return $this->get_param ($data[1]);
         }
@@ -181,8 +181,8 @@ class StringFormatter {
             return str_pad (
                 $this->get_param ($match[1]),
                 $match[4],
-                ($match[2] ? $match[2] : ' '),
-                $this->matrix__str_pad[$match[3]]
+                (strlen ($match[2]) > 0 ? $match[2] : ' '),
+                self::$matrix__str_pad[$match[3]]
             );
         }
 
@@ -218,19 +218,24 @@ class StringFormatter {
             }
         }
 
-        ## converting to other base
-        else if (preg_match ('/
+        ## converting int to other base
+        else if (preg_match ('
+            /
             ^
-            (\d*)       # placeholder
-            [#]         # explicit hash
-            ([dxXob])   # base shortcut
+            (\d*)           # placeholder
+            [#]             # explicit hash
+            ([dxXob]|\d\d?) # base shortcut
             $
             /x', $data[1], $match)
         ) {
             $ret = base_convert (
                 (int) $this->get_param ($match[1]),
                 10,
-                $this->matrix__base_convert[$match[2]]
+                (
+                    is_numeric ($match[2])
+                        ? $match[2]
+                        : self::$matrix__base_convert[$match[2]]
+                )
             );
             if ($match[2] == 'X') {
                 $ret = strtoupper ($ret);
@@ -239,7 +244,8 @@ class StringFormatter {
         }
 
         ## array index
-        else if (preg_match ('/
+        else if (preg_match ('
+            /
             ^
                 (\d*)       # placeholder
                 \[          # opening square bracket
