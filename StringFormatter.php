@@ -51,8 +51,8 @@
  *  * convert int to other base:
  *      $f = new StringFormatter ('Test: 10: {#d}, 16: {0#x}, 2: {0#b}');
  *      echo $f->parse (11); # Test: 10: 11, 16: b, 2: 1011
- *      $f = new StringFormatter ('Test: 10: {#10}, 16: {0#16}, 2: {0#2}');
- *      echo $f->parse (11); # Test: 10: 11, 16: b, 2: 1011
+ *      $f = new StringFormatter ('Test: 10: {#10}, 16: {0#16}, 2: {0#2}, 7: {0#7}');
+ *      echo $f->parse (11); # Test: 10: 11, 16: b, 2: 1011, 7: 14
  *
  *      Available bases:
  *          * b - binary
