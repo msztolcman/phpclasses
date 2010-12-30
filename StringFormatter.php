@@ -276,21 +276,25 @@ class StringFormatter {
             ^
             ('. self::$rxp_keys[$this->mode] .')    # placeholder
             [#]                                     # explicit hash
+            (?:
+                (\d+)
+                [#]                                 # explicit hash
+            )?
             ([dxXob]|\d\d?)                         # base shortcut
             $
             /x', $data[1], $match) &&
             $this->has_key ($match[1])
         ) {
             $ret = base_convert (
-                (int) $this->get_param ($match[1]),
-                10,
+                $this->get_param ($match[1]),
+                ($match[2] ? $match[2] : 10),
                 (
-                    is_numeric ($match[2])
-                        ? $match[2]
-                        : self::$matrix__base_convert[$match[2]]
+                    is_numeric ($match[3])
+                        ? $match[3]
+                        : self::$matrix__base_convert[$match[3]]
                 )
             );
-            if ($match[2] == 'X') {
+            if ($match[3] == 'X') {
                 $ret = strtoupper ($ret);
             }
             return $ret;
