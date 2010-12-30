@@ -70,6 +70,9 @@
  * @license http://opensource.org/licenses/lgpl-3.0.html The GNU Lesser General Public License, version 3.0 (LGPLv3)
  */
 class StringFormatter {
+    const MODE_NORMAL   = 1;
+    const MODE_NAMED    = 2;
+
     /**
      * Matrix for mapping string suffixes to values provided for base_convert function
      *
@@ -93,12 +96,46 @@ class StringFormatter {
         '>' => STR_PAD_RIGHT,
         '^' => STR_PAD_BOTH,
     );
+
+    /**
+     * Regular expressions for key used in template.
+     *
+     * Key must be one of StringFormatter::MODE_* constant, and value is regular expression used to find key in tokens
+     *
+     * @var array
+     */
+    protected static $rxp_keys = array (
+        self::MODE_NORMAL   => '\d*',
+        self::MODE_NAMED    => '\w+',
+    );
+
+    /**
+     * Regular expression for finding tokens in format
+     *
+     * @var string
+     */
+    protected static $rxp_token = '
+        /
+        \{              # opening brace
+            (
+                [^}]*   # all but closing brace
+            )
+        \}              # closing brace
+    /x';
+
     /**
      * Store provided by user format string
      *
      * @var string
      */
     protected $format = null;
+
+    /**
+     * Mode we are run
+     *
+     * @var int one of: StringFormatter::MODE_NORMAL, StringFormatter::MODE_NAMED
+     */
+    protected $mode = self::MODE_NORMAL;
 
     /**
      * Given for StringFormatter::parse parameters
@@ -115,26 +152,22 @@ class StringFormatter {
     protected $pointer = 0;
 
     /**
-     * Regular expression for finding tokens in format
-     *
-     * @var string
-     */
-    protected $rxp_token = '
-        /
-        \{              # opening brace
-            (
-                [^}]*   # all but closing brace
-            )
-        \}              # closing brace
-    /x';
-
-    /**
      * Constructor
      *
      * @param string $format format to parse
      */
     public function __construct ($format) {
         $this->format = $format;
+    }
+
+    /**
+     * Helper function - test for existence of key in given parameters
+     *
+     * @param string|int key
+     * @return bool
+     */
+    protected function has_key ($key) {
+        return ($this->mode == self::MODE_NORMAL && $key == '') || isset ($this->params[$key]);
     }
 
     /**
@@ -164,7 +197,12 @@ class StringFormatter {
         }
 
         ## simple auto or explicit placeholder
-        if ($data[1] == '' || is_numeric ($data[1])) {
+        if ($this->mode == self::MODE_NORMAL && $this->has_key ($data[1])) {
+            return $this->get_param ($data[1]);
+        }
+
+        ## simple named, explicit placeholder
+        else if ($this->mode == self::MODE_NAMED && strlen ($data[1]) > 0 && $this->has_key ($data[1])) {
             return $this->get_param ($data[1]);
         }
 
@@ -172,13 +210,14 @@ class StringFormatter {
         else if (preg_match ('
             /
             ^
-                (\d*)       # placeholder
-                :           # explicit colon
-                (.)?        # pad character
-                ([<>^])     # alignment
-                (\d+)       # pad length
+                ('. self::$rxp_keys[$this->mode] .')  # placeholder
+                :                   # explicit colon
+                (.)?                # pad character
+                ([<>^])             # alignment
+                (\d+)               # pad length
             $
-            /x', $data[1], $match)
+            /x', $data[1], $match) &&
+            $this->has_key ($match[1])
         ) {
             return str_pad (
                 $this->get_param ($match[1]),
@@ -192,11 +231,12 @@ class StringFormatter {
         else if (preg_match ('
             /
             ^
-                (\d*)   # placeholder
-                :       # explicit colon
-                (.*)    # sprintf pattern
+                ('. self::$rxp_keys[$this->mode] .')  # placeholder
+                :                   # explicit colon
+                (.*)                # sprintf pattern
             $
-            /x', $data[1], $match)
+            /x', $data[1], $match) &&
+            $this->has_key ($match[1])
         ) {
             return sprintf ($match[2], $this->get_param ($match[1]));
         }
@@ -205,11 +245,12 @@ class StringFormatter {
         else if (preg_match ('
             /
             ^
-                (\d*)   # placeholder
-                ->      # explicit arrow
-                (\w+)   # keyword (field or method name)
+                ('. self::$rxp_keys[$this->mode] .')  # placeholder
+                ->                  # explicit arrow
+                (\w+)               # keyword (field or method name)
             $
-            /x', $data[1], $match)
+            /x', $data[1], $match) &&
+            $this->has_key ($match[1])
         ) {
             $param = $this->get_param ($match[1]);
             if (method_exists ($param, $match[2])) {
@@ -224,11 +265,12 @@ class StringFormatter {
         else if (preg_match ('
             /
             ^
-            (\d*)           # placeholder
-            [#]             # explicit hash
-            ([dxXob]|\d\d?) # base shortcut
+            ('. self::$rxp_keys[$this->mode] .')  # placeholder
+            [#]                 # explicit hash
+            ([dxXob]|\d\d?)     # base shortcut
             $
-            /x', $data[1], $match)
+            /x', $data[1], $match) &&
+            $this->has_key ($match[1])
         ) {
             $ret = base_convert (
                 (int) $this->get_param ($match[1]),
@@ -249,12 +291,13 @@ class StringFormatter {
         else if (preg_match ('
             /
             ^
-                (\d*)       # placeholder
-                \[          # opening square bracket
-                    (\w+)   # key
-                \]          # closing square bracket
+                ('. self::$rxp_keys[$this->mode] .')  # placeholder
+                \[                  # opening square bracket
+                    (\w+)           # key
+                \]                  # closing square bracket
             $
-            /x', $data[1], $match)
+            /x', $data[1], $match) &&
+            $this->has_key ($match[1])
         ) {
             $ret = $this->get_param ($match[1]);
             return $ret[$match[2]];
@@ -273,8 +316,25 @@ class StringFormatter {
      * @return string
      */
     public function parse () {
+        $this->mode = self::MODE_NORMAL;
+
         $this->params = func_get_args ();
-        return preg_replace_callback ($this->rxp_token, array ($this, 'format_callback'), $this->format);
+        return preg_replace_callback (self::$rxp_token, array ($this, 'format_callback'), $this->format);
+    }
+
+    /**
+     * Main StringFormatter method - call it with one array argument, when want to use named parameters in your template.
+     *
+     * Keys in given array must correspond with parameters in template.
+     *
+     * @param array arg parameters used to format given string
+     * @return string
+     */
+    public function parseNamed (array $args) {
+        $this->mode = self::MODE_NAMED;
+
+        $this->params = $args;
+        return preg_replace_callback (self::$rxp_token, array ($this, 'format_callback'), $this->format);
     }
 
 }
