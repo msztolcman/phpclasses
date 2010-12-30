@@ -210,11 +210,11 @@ class StringFormatter {
         else if (preg_match ('
             /
             ^
-                ('. self::$rxp_keys[$this->mode] .')  # placeholder
-                :                   # explicit colon
-                (.)?                # pad character
-                ([<>^])             # alignment
-                (\d+)               # pad length
+                ('. self::$rxp_keys[$this->mode] .')    # placeholder
+                :                                       # explicit colon
+                (.)?                                    # pad character
+                ([<>^])                                 # alignment
+                (\d+)                                   # pad length
             $
             /x', $data[1], $match) &&
             $this->has_key ($match[1])
@@ -231,9 +231,9 @@ class StringFormatter {
         else if (preg_match ('
             /
             ^
-                ('. self::$rxp_keys[$this->mode] .')  # placeholder
-                :                   # explicit colon
-                (.*)                # sprintf pattern
+                ('. self::$rxp_keys[$this->mode] .')    # placeholder
+                :                                       # explicit colon
+                (.*)                                    # sprintf pattern
             $
             /x', $data[1], $match) &&
             $this->has_key ($match[1])
@@ -245,9 +245,9 @@ class StringFormatter {
         else if (preg_match ('
             /
             ^
-                ('. self::$rxp_keys[$this->mode] .')  # placeholder
-                ->                  # explicit arrow
-                (\w+)               # keyword (field or method name)
+                ('. self::$rxp_keys[$this->mode] .')    # placeholder
+                ->                                      # explicit arrow
+                (\w+)                                   # keyword (field or method name)
             $
             /x', $data[1], $match) &&
             $this->has_key ($match[1])
@@ -265,9 +265,9 @@ class StringFormatter {
         else if (preg_match ('
             /
             ^
-            ('. self::$rxp_keys[$this->mode] .')  # placeholder
-            [#]                 # explicit hash
-            ([dxXob]|\d\d?)     # base shortcut
+            ('. self::$rxp_keys[$this->mode] .')    # placeholder
+            [#]                                     # explicit hash
+            ([dxXob]|\d\d?)                         # base shortcut
             $
             /x', $data[1], $match) &&
             $this->has_key ($match[1])
@@ -291,10 +291,10 @@ class StringFormatter {
         else if (preg_match ('
             /
             ^
-                ('. self::$rxp_keys[$this->mode] .')  # placeholder
-                \[                  # opening square bracket
-                    (\w+)           # key
-                \]                  # closing square bracket
+                ('. self::$rxp_keys[$this->mode] .')    # placeholder
+                \[                                      # opening square bracket
+                    (\w+)                               # key
+                \]                                      # closing square bracket
             $
             /x', $data[1], $match) &&
             $this->has_key ($match[1])
