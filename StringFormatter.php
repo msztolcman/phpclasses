@@ -92,8 +92,8 @@ class StringFormatter {
      * @var array
      */
     protected static $matrix__str_pad = array (
-        '<' => STR_PAD_LEFT,
-        '>' => STR_PAD_RIGHT,
+        '<' => STR_PAD_RIGHT,
+        '>' => STR_PAD_LEFT,
         '^' => STR_PAD_BOTH,
     );
 
@@ -232,13 +232,13 @@ class StringFormatter {
             /
             ^
                 ('. self::$rxp_keys[$this->mode] .')    # placeholder
-                :                                       # explicit colon
+                %                                       # explicit percent
                 (.*)                                    # sprintf pattern
             $
             /x', $data[1], $match) &&
             $this->has_key ($match[1])
         ) {
-            return sprintf ($match[2], $this->get_param ($match[1]));
+            return vsprintf ($match[2], $this->get_param ($match[1]));
         }
 
         ## call object method or get object property
@@ -256,8 +256,17 @@ class StringFormatter {
             if (method_exists ($param, $match[2])) {
                 return call_user_func (array ($param, $match[2]));
             }
-            else {
+            else if (property_exists ($param, $match[2])) {
                 return $param->$match[2];
+            }
+            else if (in_array ('__call', get_class_methods ($param))) {
+                return call_user_func (array ($param, $match[2]));
+            }
+            else if (in_array ('__get', get_class_methods ($param))) {
+                return $param->$match[2];
+            }
+            else {
+                return $data[0];
             }
         }
 
