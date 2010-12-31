@@ -8,7 +8,7 @@ require_once dirname (dirname (__FILE__)) .'/StringFormatter.php';
 
 class StringFormatter_Normal_Sprintf extends UnitTestCase {
     public function __construct () {
-        parent::__construct ('Mode: normal, case: text alignment');
+        parent::__construct ('Mode: normal, case: sprintf');
     }
 
     public function testSprintfFloat () {
