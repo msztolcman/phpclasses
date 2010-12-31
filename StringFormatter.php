@@ -344,7 +344,7 @@ class StringFormatter {
      * @param array arg parameters used to format given string
      * @return string
      */
-    public function parseNamed (array $args) {
+    public function parseNamed (array $args = null) {
         $this->mode = self::MODE_NAMED;
 
         $this->params = $args;
