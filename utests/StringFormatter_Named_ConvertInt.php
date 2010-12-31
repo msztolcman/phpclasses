@@ -6,9 +6,9 @@ ini_set ('display_errors', true);
 require_once dirname (__FILE__) . '/simpletest/autorun.php';
 require_once dirname (dirname (__FILE__)) .'/StringFormatter.php';
 
-class StringFormatter_Normal_ConvertInt extends UnitTestCase {
+class StringFormatter_Named_ConvertInt extends UnitTestCase {
     public function __construct () {
-        parent::__construct ('Mode: normal, case: convert int to other base');
+        parent::__construct ('Mode: named, case: convert int to other base');
     }
 
     public function testDecToNamedBin () {
