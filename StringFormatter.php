@@ -75,7 +75,7 @@
  * The same mechanism works with every previous example, but there is no automatic ({}) tokens!
  *
  * @author Marcin Sztolcman <marcin /at/ urzenia /dot/ net>
- * @version 0.1
+ * @version 0.2
  * @copyright Copyright (c) 2010, Marcin Sztolcman
  * @license http://opensource.org/licenses/lgpl-3.0.html The GNU Lesser General Public License, version 3.0 (LGPLv3)
  */
