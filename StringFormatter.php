@@ -4,7 +4,7 @@
  * StringFormatter - simple, but powerful string formatting
  *
  * @author Marcin Sztolcman <marcin /at/ urzenia /dot/ net>
- * @version 0.1
+ * @version 0.2
  * @copyright Copyright (c) 2010, Marcin Sztolcman
  * @license http://opensource.org/licenses/lgpl-3.0.html The GNU Lesser General Public License, version 3.0 (LGPLv3)
  */
@@ -12,7 +12,7 @@
 /**
  * StringFormatter - simple, but powerful string formatting
  *
- * Recognized patterns:
+ * Recognized patterns (indexed version):
  *  * simple replacement:
  *      $f = new StringFormatter ('{} {}!');
  *      echo $f->parse ('Hello', 'world'); # Hello world!
@@ -63,6 +63,16 @@
  *  * array indexes:
  *      $f = new StringFormatter ('Test: test1: {[test1]}, test2: {0[test2]}');
  *      echo $f->parse (array ('test1' => 'Hello', 'test2' => 'world')); # Test: test1: Hello, test2: world
+ *
+ *
+ *
+ * There is also named version of templates. You can use in template, instead of numeric indexes, named arguments, like:
+ *      $f = new StringFormatter ('{hello} {name}!');
+ * In this case, you must use StringFormatter::parseNamed method to parse this template. This works with one argument only, an array.
+ * Keys in that array are related to named tokens in your tenplate, in above example there is: 'hello' and 'name'. Example of use:
+ *      echo $f->parseNamed (array ('name' => 'world', 'hello' => 'Hello'); # Hello world!
+ *
+ * The same mechanism works with every previous example, but there is no automatic ({}) tokens!
  *
  * @author Marcin Sztolcman <marcin /at/ urzenia /dot/ net>
  * @version 0.1
