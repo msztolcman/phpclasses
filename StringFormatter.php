@@ -35,9 +35,9 @@
  *      $f = new StringFormatter ('{} "{1:*^20}"');
  *      echo $f->parse ('Hello', 'world'); # Hello "*******world********"
  *  * sprintf-like formatting:
- *      $f = new StringFormatter ('Test: {:%.3f}');
+ *      $f = new StringFormatter ('Test: {%%.3f}');
  *      echo $f->parse (2.1234567); # Test: 2.123
- *      $f = new StringFormatter ('Test 2: {:%c}');
+ *      $f = new StringFormatter ('Test 2: {%%c}');
  *      echo $f->parse (97); # Test2: a
  *  * call object method or get object property:
  *      $f = new StringFormatter ('Test: {0->method} {->property}');
