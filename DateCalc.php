@@ -30,7 +30,7 @@ class DateCalc {
     /**
      * Original datetime given by user
      *
-     * $date argument to constructor
+     * $date argument in constructor
      *
      * @var string|int
      */
@@ -49,6 +49,7 @@ class DateCalc {
      * Dumper.
      *
      * @internal
+     * @ignore
      * @param mixed arg,...
      */
     private static function D () {
