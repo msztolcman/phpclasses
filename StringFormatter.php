@@ -283,11 +283,7 @@ class StringFormatter {
             ([dxXob]|\d\d?)                         # destination base
             $
             /x', $data[1], $match) &&
-            $this->has_key ($match[1]) &&
-            (
-                is_numeric ($match[3]) ||
-                isset (self::$matrix__base_convert[$match[3]])
-            )
+            $this->has_key ($match[1])
         ) {
             $ret = base_convert (
                 $this->get_param ($match[1]),                       # value to convert
