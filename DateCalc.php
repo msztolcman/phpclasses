@@ -45,7 +45,6 @@ class DateCalc {
      */
     protected $datetime_mask        = null;
 
-## static methods
     /**
      * Dumper.
      *
@@ -130,7 +129,6 @@ class DateCalc {
         return $datetime;
     }
 
-## normal methods
     /**
      * Constructor
      * Parse given date and set datetime array
@@ -192,60 +190,104 @@ class DateCalc {
         return $this;
     }
 
-## full value getters
+    /**
+     * Return current datetime in same format used when create object
+     *
+     * @return string
+     */
     public function getDateTime () {
         return strftime ($this->datetime_mask, $this->datetime['ts']);
     }
 
+    /**
+     * Return current datetime in given format
+     *
+     * @return string
+     */
     public function getFormatted ($format) {
         return strftime ($format, $this->datetime['ts']);
     }
 
+    /**
+     * Return original datetime (same as given in constructor)
+     *
+     * @return string|int
+     */
     public function getOriginalDate () {
         return $this->datetime_original;
     }
 
+    /**
+     * Return original mask (same as given in constructor)
+     *
+     * @return string
+     */
     public function getOriginalMask () {
         return $this->datetime_mask;
     }
 
+    /**
+     * Return current value as timestamp
+     *
+     * @return int
+     */
     public function getTimestamp () {
         return $this->datetime['ts'];
     }
 
-## simple getters
+    /**
+     * Return current seconds
+     *
+     * @return int
+     */
     public function getSecond () {
         return $this->datetime['second'];
     }
 
+    /**
+     * Return current minutes
+     *
+     * @return int
+     */
     public function getMinute () {
         return $this->datetime['minute'];
     }
 
+    /**
+     * Return current hours
+     *
+     * @return int
+     */
     public function getHour () {
         return $this->datetime['hour'];
     }
 
+    /**
+     * Return current days
+     *
+     * @return int
+     */
     public function getDay () {
         return $this->datetime['day'];
     }
 
+    /**
+     * Return current months
+     *
+     * @return int
+     */
     public function getMonth () {
         return $this->datetime['month'];
     }
 
+    /**
+     * Return current years
+     *
+     * @return int
+     */
     public function getYear () {
         return $this->datetime['year'];
     }
 
 }
 
-date_default_timezone_set ('Europe/Warsaw');
-$d = new DateCalc (DateCalc::DATE_NOW, '');
-echo $d->getFormatted ('%Y-%m-%d %H:%M:%S') . "\n";
-# $d->calculate ('+4 months -7 days');
-$d2 = $d->calculate ('+4');
-echo $d->getFormatted ('%Y-%m-%d %H:%M:%S') . "\n";
-echo $d2->getFormatted ('%Y-%m-%d %H:%M:%S') . "\n";
-$d->modify ('+4');
-echo $d->getFormatted ('%Y-%m-%d %H:%M:%S') . "\n";
