@@ -3,8 +3,8 @@
 error_reporting (E_ALL | E_STRICT);
 ini_set ('display_errors', true);
 
-require_once dirname (__FILE__) . '/simpletest/autorun.php';
-require_once dirname (dirname (__FILE__)) .'/StringFormatter.php';
+require_once dirname (__FILE__) . '/../simpletest/autorun.php';
+require_once dirname (__FILE__) . '/../../StringFormatter.php';
 
 class StringFormatter_Normal_ArrayIndex extends UnitTestCase {
     public function __construct () {
