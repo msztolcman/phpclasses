@@ -154,7 +154,11 @@ class DateCalc {
     }
 
     /**
+     * Calculate current state with new value, and return new DateCalc object with new values.
      *
+     * @param string value how to recalculate date
+     * @return DateCalc new object with modified value
+     * @see DateCalc::modify()
      */
     public function calculate ($value) {
         $value = trim ($value);
@@ -176,6 +180,12 @@ class DateCalc {
         return new DateCalc ($value);
     }
 
+    /**
+     * Change current state to the new value, and return itself
+     *
+     * @param string value how to recalculate date
+     * @return DateCalc
+     */
     public function modify ($value) {
         $dc = $this->calculate ($value);
         $this->datetime = $dc->datetime;
