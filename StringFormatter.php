@@ -277,21 +277,21 @@ class StringFormatter {
             ('. self::$rxp_keys[$this->mode] .')    # placeholder
             [#]                                     # explicit hash
             (?:
-                (\d+)
+                (\d+)                               # source base
                 [#]                                 # explicit hash
             )?
-            ([dxXob]|\d\d?)                         # base shortcut
+            ([dxXob]|\d\d?)                         # destination base
             $
             /x', $data[1], $match) &&
             $this->has_key ($match[1])
         ) {
             $ret = base_convert (
-                $this->get_param ($match[1]),
-                ($match[2] ? $match[2] : 10),
+                $this->get_param ($match[1]),                       # value to convert
+                ($match[2] ? $match[2] : 10),                       # source base (defaults to 10)
                 (
-                    is_numeric ($match[3])
-                        ? $match[3]
-                        : self::$matrix__base_convert[$match[3]]
+                    is_numeric ($match[3])                          # destination base is:
+                        ? $match[3]                                 # - numeric
+                        : self::$matrix__base_convert[$match[3]]    # - or named
                 )
             );
             if ($match[3] == 'X') {
@@ -310,9 +310,10 @@ class StringFormatter {
                 \]                                      # closing square bracket
             $
             /x', $data[1], $match) &&
-            $this->has_key ($match[1])
+            $this->has_key ($match[1]) &&
+            is_array ($ret = $this->get_param ($match[1])) &&
+            isset ($ret[$match[2]])
         ) {
-            $ret = $this->get_param ($match[1]);
             return $ret[$match[2]];
         }
 
