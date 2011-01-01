@@ -138,9 +138,6 @@ class DateCalc {
      * @param string mask ignored if date is int or DateCalc::DATE_NOW, in any other case must be a format given to strptime
      */
     public function __construct ($date = self::DATE_NOW, $mask='%Y-%m-%d %H:%M:%S') {
-        $this->datetime_original    = $date;
-        $this->datetime_mask        = $mask;
-
         if ($date == self::DATE_NOW) {
             $date = time ();
             $mask = '%s';
@@ -148,6 +145,9 @@ class DateCalc {
         else if (is_int ($date)) {
             $mask = '%s';
         }
+
+        $this->datetime_original    = $date;
+        $this->datetime_mask        = $mask;
 
         $this->datetime = self::parseDate ($date, $mask);
     }
@@ -175,7 +175,20 @@ class DateCalc {
             throw new Exception ('bad pattern');
         }
 
-        $value = strtotime ("+$value".($match[3] ? '' : 'seconds'), $this->datetime['ts']);
+        $value = '';
+        foreach ($match as &$data) {
+            if (!$data[1]) {
+                $data[1] = '+';
+            }
+
+            if (!$data[3]) {
+                $data[3] = ' seconds';
+            }
+
+            $value .= "$data[1]$data[2] $data[3]";
+        }
+
+        $value = strtotime ($value, $this->datetime['ts']);
         return new DateCalc ($value);
     }
 
