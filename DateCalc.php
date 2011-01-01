@@ -175,11 +175,13 @@ class DateCalc {
             throw new Exception ('bad pattern');
         }
 
-        $value = '';
+        $value      = '';
+        $prev_sign  = '';
         foreach ($match as &$data) {
             if (!$data[1]) {
-                $data[1] = '+';
+                $data[1] = $prev_sign ? $prev_sign : '+';
             }
+            $prev_sign = $data[1];
 
             if (!$data[3]) {
                 $data[3] = ' seconds';
