@@ -52,13 +52,13 @@ class DateCalc {
     protected $datetime_original    = null;
 
     /**
-     * Original mask given by user
+     * Original format given by user
      *
-     * $mask argument to constructor
+     * $format argument to constructor
      *
      * @var string|int
      */
-    protected $datetime_mask        = null;
+    protected $datetime_format      = null;
 
     /**
      * Dumper.
@@ -125,14 +125,18 @@ class DateCalc {
 
     /**
      * Parse date to datetime array.
-     * As it use strptime () to parse date, so it is used as this function.
+     * It use strptime () to parse date, so parseDate is used as this function (same arguments).
      *
      * @param string|int date
-     * @param string mask
+     * @param string format
      * @return array
      */
-    public static function parseDate ($date, $mask) {
-        $datetime = strptime ($date, $mask);
+    public static function parseDate ($date, $format) {
+        $datetime = strptime ($date, $format);
+        if ($datetime === false) {
+            return;
+        }
+
         $datetime = array (
             'year'      => $datetime['tm_year'] + 1900,
             'month'     => $datetime['tm_mon'] + 1,
@@ -140,8 +144,21 @@ class DateCalc {
             'hour'      => $datetime['tm_hour'],
             'minute'    => $datetime['tm_min'],
             'second'    => $datetime['tm_sec'],
+            'weekday'   => $datetime['tm_wday'],
+            'yearday'   => $datetime['tm_yday'],
         );
+
         $datetime['ts'] = self::tsFromDatetime ($datetime);
+
+        ## dirty hack for strptime: on some systems there is no automatically calculated tm_yday and tm_wday. But when we parse from
+        ## timestamp, or few other tokens, it it calculated... so we slow down a little, but have always this data on this systems too...
+        ## source: http://www.php.net/manual/en/function.strptime.php#89239
+        if ($datetime['yearday'] == 0 && $datetime['weekday'] == 0) {
+            $tmp = strptime ($datetime['ts'], '%s');
+            $datetime['yearday'] = $tmp['tm_yday'];
+            $datetime['weekday'] = $tmp['tm_wday'];
+        }
+
         return $datetime;
     }
 
@@ -150,21 +167,24 @@ class DateCalc {
      * Parse given date and set datetime array
      *
      * @param string|int date DateCalc::DATE_NOW, timestamp or date
-     * @param string mask ignored if date is int or DateCalc::DATE_NOW, in any other case must be a format given to strptime
+     * @param string format ignored if date is int or DateCalc::DATE_NOW, in any other case must be a format given to strptime
      */
-    public function __construct ($date = self::DATE_NOW, $mask='%Y-%m-%d %H:%M:%S') {
+    public function __construct ($date = self::DATE_NOW, $format='%Y-%m-%d %H:%M:%S') {
         if ($date == self::DATE_NOW) {
             $date = time ();
-            $mask = '%s';
+            $format = '%s';
         }
         else if (is_int ($date)) {
-            $mask = '%s';
+            $format = '%s';
         }
 
         $this->datetime_original    = $date;
-        $this->datetime_mask        = $mask;
+        $this->datetime_format      = $format;
 
-        $this->datetime = self::parseDate ($date, $mask);
+        $this->datetime = self::parseDate ($date, $format);
+        if (is_null ($this->datetime)) {
+            throw new InvalidArgumentException ("Unrecognized format: $format");
+        }
     }
 
     /**
@@ -229,7 +249,7 @@ class DateCalc {
      * @return string
      */
     public function getDateTime () {
-        return strftime ($this->datetime_mask, $this->datetime['ts']);
+        return strftime ($this->datetime_format, $this->datetime['ts']);
     }
 
     /**
@@ -251,12 +271,12 @@ class DateCalc {
     }
 
     /**
-     * Return original mask (same as given in constructor)
+     * Return original format (same as given in constructor)
      *
      * @return string
      */
-    public function getOriginalMask () {
-        return $this->datetime_mask;
+    public function getOriginalFormat () {
+        return $this->datetime_format;
     }
 
     /**
@@ -320,6 +340,24 @@ class DateCalc {
      */
     public function getYear () {
         return $this->datetime['year'];
+    }
+
+    /**
+     * Return current weekday number (0 - Sunday, 6 - Saturday)
+     *
+     * @return int
+     */
+    public function getWeekday () {
+        return $this->datetime['weekday'];
+    }
+
+    /**
+     * Return current yearday number (0-365)
+     *
+     * @return int
+     */
+    public function getYearday () {
+        return $this->datetime['yearday'];
     }
 
 }
