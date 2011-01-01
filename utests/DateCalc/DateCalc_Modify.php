@@ -38,6 +38,9 @@ class DateCalc_Modify extends UnitTestCase {
 
         $this->assertIdentical ($dc->getTimestamp (), $ts + 86400 * 7);
         $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_ADD1WEEK);
+
+        $this->assertIdentical (1, $dc->getWeekday ());
+        $this->assertIdentical (363, $dc->getYearday ());
     }
 
     public function testSub1Week () {
@@ -54,6 +57,9 @@ class DateCalc_Modify extends UnitTestCase {
 
         $this->assertIdentical ($dc->getTimestamp (), $ts - 86400 * 7);
         $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_SUB1WEEK);
+
+        $this->assertIdentical (1, $dc->getWeekday ());
+        $this->assertIdentical (349, $dc->getYearday ());
     }
 
     public function testAdd2Days7Hours () {
@@ -70,6 +76,9 @@ class DateCalc_Modify extends UnitTestCase {
 
         $this->assertIdentical ($dc->getTimestamp (), $ts + 86400 * 2 + 3600 * 7);
         $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_ADD2DAYS7HOURS);
+
+        $this->assertIdentical (3, $dc->getWeekday ());
+        $this->assertIdentical (358, $dc->getYearday ());
     }
 
     public function testSub2Days7Hours () {
@@ -86,6 +95,9 @@ class DateCalc_Modify extends UnitTestCase {
 
         $this->assertIdentical ($dc->getTimestamp (), $ts - 86400 * 2 - 3600 * 7);
         $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_SUB2DAYS7HOURS);
+
+        $this->assertIdentical (5, $dc->getWeekday ());
+        $this->assertIdentical (353, $dc->getYearday ());
     }
 
     public function test200 () {
@@ -101,6 +113,9 @@ class DateCalc_Modify extends UnitTestCase {
 
         $this->assertIdentical ($dc->getTimestamp (), $ts + 200);
         $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_200);
+
+        $this->assertIdentical (1, $dc->getWeekday ());
+        $this->assertIdentical (356, $dc->getYearday ());
     }
 
     public function test1Day310 () {
@@ -116,6 +131,9 @@ class DateCalc_Modify extends UnitTestCase {
 
         $this->assertIdentical ($dc->getTimestamp (), $ts + 86400 + 310);
         $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_1DAY310);
+
+        $this->assertIdentical (2, $dc->getWeekday ());
+        $this->assertIdentical (357, $dc->getYearday ());
     }
 
     public function testSub1Day310 () {
@@ -131,6 +149,9 @@ class DateCalc_Modify extends UnitTestCase {
 
         $this->assertIdentical ($dc->getTimestamp (), $ts - 86400 - 310);
         $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_SUB1DAY310);
+
+        $this->assertIdentical (0, $dc->getWeekday ());
+        $this->assertIdentical (355, $dc->getYearday ());
     }
 
     public function testAdd2Weeks () {
@@ -146,6 +167,9 @@ class DateCalc_Modify extends UnitTestCase {
 
         $this->assertIdentical ($dc->getTimestamp (), $ts + 86400 * 14);
         $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_ADD2WEEKS);
+
+        $this->assertIdentical (1, $dc->getWeekday ());
+        $this->assertIdentical (4, $dc->getYearday ());
     }
 
     public function testSub2Weeks () {
@@ -161,6 +185,9 @@ class DateCalc_Modify extends UnitTestCase {
 
         $this->assertIdentical ($dc->getTimestamp (), $ts - 86400 * 14);
         $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_SUB2WEEKS);
+
+        $this->assertIdentical (1, $dc->getWeekday ());
+        $this->assertIdentical (342, $dc->getYearday ());
     }
 
     public function testAddInvalidValue () {
