@@ -21,6 +21,21 @@ class DateCalc {
     const DATE_NOW = -1;
 
     /**
+     * Array with recognized units in {@link DateCalc::calculate()} or in {@link DateCalc::modify()}
+     *
+     * @var array
+     */
+    private static $calculate_units = array (
+        'sec', 'secs', 'second', 'seconds',
+        'min', 'mins', 'minute', 'minutes',
+        'hour', 'hours',
+        'day', 'days',
+        'month', 'months',
+        'year', 'years',
+        'week', 'weeks', 'weekend', 'weekends',
+    );
+
+    /**
      * Current values of DateCalc object
      *
      * @var array
@@ -164,18 +179,17 @@ class DateCalc {
 
         if (!preg_match_all ('
             /
-                ([+-])?
+                ([+-])?             # sign
                 \s*
-                (\d+)
+                (\d+)               # quant
                 \s*
-                (secs?|seconds?|mins?|minutes?|hours?|days?|months?|years?|weeks?|weekends?)?
-                (?:,?\s*)
+                (\w*)               #unit
             /x', $value, $match, PREG_SET_ORDER
         )) {
-            throw new Exception ('bad pattern');
+            throw new InvalidArgumentException ("Incorrect pattern to calculate: $value");
         }
 
-        $value      = '';
+        $ret        = '';
         $prev_sign  = '';
         foreach ($match as &$data) {
             if (!$data[1]) {
@@ -186,12 +200,15 @@ class DateCalc {
             if (!$data[3]) {
                 $data[3] = ' seconds';
             }
+            else if (!in_array ($data[3], self::$calculate_units)) {
+                throw new InvalidArgumentException ("Incorrect pattern to calculate: $value");
+            }
 
-            $value .= "$data[1]$data[2] $data[3]";
+            $ret .= "$data[1]$data[2] $data[3]";
         }
 
-        $value = strtotime ($value, $this->datetime['ts']);
-        return new DateCalc ($value);
+        $ret = strtotime ($ret, $this->datetime['ts']);
+        return new DateCalc ($ret);
     }
 
     /**
