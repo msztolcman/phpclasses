@@ -32,7 +32,7 @@ class DateCalc {
         'day', 'days',
         'month', 'months',
         'year', 'years',
-        'week', 'weeks', 'weekend', 'weekends',
+        'weeks',
     );
 
     /**
@@ -203,7 +203,7 @@ class DateCalc {
                 \s*
                 (\d+)               # quant
                 \s*
-                (\w*)               #unit
+                (\w*)               # unit
             /x', $value, $match, PREG_SET_ORDER
         )) {
             throw new InvalidArgumentException ("Incorrect pattern to calculate: $value");
@@ -352,7 +352,7 @@ class DateCalc {
     }
 
     /**
-     * Return current yearday number (0-365)
+     * Return current yearday number (0-366)
      *
      * @return int
      */
