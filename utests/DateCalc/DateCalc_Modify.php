@@ -9,8 +9,8 @@ require_once dirname (__FILE__) . '/../../DateCalc.php';
 class DateCalc_Modify extends UnitTestCase {
     const TS = 346299333; ## 1980-12-22 03:15:33
     const DATE2 = '22/12/80 03/15/33';
-    const DATE2_ADD1WEEK = '29/12/80 03/15/33';
-    const DATE2_SUB1WEEK = '15/12/80 03/15/33';
+    const DATE2_ADD1WEEKS = '29/12/80 03/15/33';
+    const DATE2_SUB1WEEKS = '15/12/80 03/15/33';
     const DATE2_ADD2DAYS7HOURS = '24/12/80 10/15/33';
     const DATE2_SUB2DAYS7HOURS = '19/12/80 20/15/33';
     const DATE2_200 = '22/12/80 03/18/53';
@@ -24,39 +24,39 @@ class DateCalc_Modify extends UnitTestCase {
         parent::__construct ('modify dates');
     }
 
-    public function testAdd1Week () {
+    public function testAdd1Weeks () {
         $dc = new DateCalc (self::DATE2, self::FORMAT2);
 
         $ts = $dc->getTimestamp ();
         $dt = $dc->getDateTime ();
 
-        $dc->modify ('+1 week');
+        $dc->modify ('+1 weeks');
 
         $this->assertNotIdentical ($dc->getTimestamp (), self::TS);
         $this->assertNotIdentical ($dc->getTimestamp (), $ts);
         $this->assertNotIdentical ($dc->getDateTime (), $dt);
 
         $this->assertIdentical ($dc->getTimestamp (), $ts + 86400 * 7);
-        $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_ADD1WEEK);
+        $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_ADD1WEEKS);
 
         $this->assertIdentical (1, $dc->getWeekday ());
         $this->assertIdentical (363, $dc->getYearday ());
     }
 
-    public function testSub1Week () {
+    public function testSub1Weeks () {
         $dc = new DateCalc (self::DATE2, self::FORMAT2);
 
         $ts = $dc->getTimestamp ();
         $dt = $dc->getDateTime ();
 
-        $dc->modify ('-1 week');
+        $dc->modify ('-1 weeks');
 
         $this->assertNotIdentical ($dc->getTimestamp (), self::TS);
         $this->assertNotIdentical ($dc->getTimestamp (), $ts);
         $this->assertNotIdentical ($dc->getDateTime (), $dt);
 
         $this->assertIdentical ($dc->getTimestamp (), $ts - 86400 * 7);
-        $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_SUB1WEEK);
+        $this->assertIdentical ($dc->getFormatted (self::FORMAT2), self::DATE2_SUB1WEEKS);
 
         $this->assertIdentical (1, $dc->getWeekday ());
         $this->assertIdentical (349, $dc->getYearday ());
